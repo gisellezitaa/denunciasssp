@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Relatórios ♡</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">🎀</text></svg>'), auto;
+        }
+        
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe5f1 50%, #ffd4e5 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 182, 193, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 192, 203, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 218, 224, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            color: #d4638c;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(212, 99, 140, 0.2);
+        }
+        
+        .header .subtitle {
+            font-size: 1.1em;
+            color: #e699b5;
+            font-weight: 500;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            border: 3px solid #ffc0d3;
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(212, 99, 140, 0.15);
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #ffc0d3;
+        }
+        
+        .icon {
+            font-size: 1.8em;
+        }
+        
+        .card-title {
+            font-size: 1.6em;
+            color: #d4638c;
+            font-weight: 700;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #d4638c;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+        
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #ffc0d3;
+            border-radius: 12px;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.95em;
+            color: #8b5a6f;
+            background: rgba(255, 245, 250, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #d4638c;
+            background: rgba(255, 240, 245, 0.8);
+            box-shadow: 0 0 0 3px rgba(212, 99, 140, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .provas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .prova-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .btn-remove {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #ffb3c6, #ffa3b8);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">🎀</text></svg>'), pointer;
+            transition: all 0.3s ease;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .btn-remove:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 163, 184, 0.4);
+        }
+        
+        .btn-add,
+        .btn-copy {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ffc0d3, #ffb3c6);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">🎀</text></svg>'), pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            font-family: 'Quicksand', sans-serif;
+            box-shadow: 0 4px 15px rgba(255, 192, 211, 0.3);
+        }
+        
+        .btn-add:hover,
+        .btn-copy:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(255, 192, 211, 0.5);
+        }
+        
+        .btn-copy {
+            background: linear-gradient(135deg, #d4638c, #e699b5);
+            font-size: 1.3em;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 15px;
+            background: rgba(144, 238, 144, 0.2);
+            border: 2px solid #90ee90;
+            border-radius: 12px;
+            color: #2d5016;
+            font-weight: 600;
+            margin-top: 15px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .card {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .prova-input-group {
+                flex-direction: column;
+            }
+            
+            .btn-remove {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⊹ ࣪ ˖ Gerador de Relatórios ⊹ ࣪ ˖</h1>
+            <p class="subtitle">Preencha as informações e copie para o Discord ♡</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">📋</span>
+                <h2 class="card-title">Informações do Relatório</h2>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Número do Relatório:</label>
+                <input type="text" id="numRelatorio" class="form-input" placeholder="Ex: 059/02-01">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">ID:</label>
+                <input type="text" id="idRelatorio" class="form-input" placeholder="Ex: #2026-6270">
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">👤</span>
+                <h2 class="card-title">Denunciante</h2>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Nome do Denunciante:</label>
+                <input type="text" id="nomeDenunciante" class="form-input" placeholder="Ex: Marinho Neto">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Passaporte do Denunciante:</label>
+                <input type="text" id="passaporteDenunciante" class="form-input" placeholder="Ex: 369">
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">⚠️</span>
+                <h2 class="card-title">Denunciados</h2>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Nome(s) dos Denunciados:</label>
+                <input type="text" id="nomesDenunciados" class="form-input" placeholder="Ex: Marlon Quaresma e demais oficiais da BAEC">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Passaporte(s):</label>
+                <input type="text" id="passaporteDenunciados" class="form-input" placeholder="Ex: 53693">
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">📝</span>
+                <h2 class="card-title">Relato da Denúncia</h2>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Relato Detalhado:</label>
+                <textarea id="relato" class="form-textarea" placeholder="Descreva o ocorrido..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Link do Prisional (opcional):</label>
+                <input type="text" id="linkPrisional" class="form-input" placeholder="Cole o link do Discord aqui">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Horário da Contestação (opcional):</label>
+                <input type="text" id="horarioContestacao" class="form-input" placeholder="Ex: 22h10">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Link da Contestação (opcional):</label>
+                <input type="text" id="linkContestacao" class="form-input" placeholder="Cole o link do Discord aqui">
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <span class="icon">🎥</span>
+                <h2 class="card-title">Provas</h2>
+            </div>
+            
+            <div id="provasContainer" class="provas-container">
+                <div class="prova-input-group">
+                    <input type="text" class="form-input prova-input" placeholder="Cole o link da prova aqui">
+                </div>
+            </div>
+            
+            <button class="btn-add" onclick="adicionarProva()">➕ Adicionar Prova</button>
+        </div>
+        
+        <button class="btn-copy" onclick="copiarRelatorio()">📋 Copiar Relatório para Discord</button>
+        
+        <div id="successMessage" class="success-message">
+            ✨ Relatório copiado com sucesso! Cole no Discord ♡
+        </div>
+    </div>
+    
+    <script>
+        function adicionarProva() {
+            const container = document.getElementById('provasContainer');
+            const novaProva = document.createElement('div');
+            novaProva.className = 'prova-input-group';
+            novaProva.innerHTML = `
+                <input type="text" class="form-input prova-input" placeholder="Cole o link da prova aqui">
+                <button class="btn-remove" onclick="removerProva(this)">🗑️ Remover</button>
+            `;
+            container.appendChild(novaProva);
+        }
+        
+        function removerProva(button) {
+            button.parentElement.remove();
+        }
+        
+        function copiarRelatorio() {
+            // Pegar valores dos inputs
+            const numRelatorio = document.getElementById('numRelatorio').value;
+            const idRelatorio = document.getElementById('idRelatorio').value;
+            const nomeDenunciante = document.getElementById('nomeDenunciante').value;
+            const passaporteDenunciante = document.getElementById('passaporteDenunciante').value;
+            const nomesDenunciados = document.getElementById('nomesDenunciados').value;
+            const passaporteDenunciados = document.getElementById('passaporteDenunciados').value;
+            const relato = document.getElementById('relato').value;
+            const linkPrisional = document.getElementById('linkPrisional').value;
+            const horarioContestacao = document.getElementById('horarioContestacao').value;
+            const linkContestacao = document.getElementById('linkContestacao').value;
+            
+            // Pegar todas as provas
+            const provasInputs = document.querySelectorAll('.prova-input');
+            const provas = Array.from(provasInputs)
+                .map(input => input.value.trim())
+                .filter(value => value !== '');
+            
+            // Montar o texto formatado
+            let texto = `> **RELATÓRIO ${numRelatorio}** | **ID ${idRelatorio}**\n`;
+            texto += `⁨\`Denunciante:\`⁩⁩ ${nomeDenunciante}\n`;
+            texto += `⁨\`Passaporte:\`⁩⁩ ${passaporteDenunciante}\n`;
+            texto += `⁨\`Denunciados:\`⁩⁩ ${nomesDenunciados}\n`;
+            texto += `⁨\`Passaporte:\`⁩⁩ ${passaporteDenunciados}\n`;
+            texto += `⁨\`Relato:\`⁩⁩ ${relato}`;
+            
+            if (linkPrisional) {
+                texto += ` Prisional feito por Quaresma, com observação aonde diz assumir total responsabilidade do mesmo: [${linkPrisional}]`;
+            }
+            
+            if (horarioContestacao && linkContestacao) {
+                texto += `\n-# Protocolo contestado às ${horarioContestacao} [${linkContestacao}]`;
+            }
+            
+            if (provas.length > 0) {
+                texto += `\n> Provas do denunciante:`;
+                provas.forEach(prova => {
+                    texto += `\n- ${prova}`;
+                });
+            }
+            
+            // Copiar para a área de transferência
+            navigator.clipboard.writeText(texto).then(() => {
+                // Mostrar mensagem de sucesso
+                const successMsg = document.getElementById('successMessage');
+                successMsg.classList.add('show');
+                
+                // Esconder mensagem após 3 segundos
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 3000);
+            }).catch(err => {
+                alert('Erro ao copiar. Por favor, tente novamente!');
+                console.error('Erro:', err);
+            });
+        }
+    </script>
+</body>
+</html>
